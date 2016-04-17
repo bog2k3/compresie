@@ -17,9 +17,10 @@ struct TreeNode {
 
 	TreeNode* pLeft = nullptr;
 	TreeNode* pRight = nullptr;
+	TreeNode* pParent = nullptr;
 
-	TreeNode(char ch, bool bit)
-		: ch(ch), bit(bit) {
+	TreeNode(char ch, bool bit, TreeNode* pParent)
+		: ch(ch), bit(bit), pParent(pParent) {
 	}
 
 	~TreeNode() {
@@ -28,6 +29,7 @@ struct TreeNode {
 		if (pRight)
 			delete pRight;
 	}
+	void getBitSequence(std::vector<bool> &out);
 };
 
 class TreeBuilder {
@@ -35,7 +37,7 @@ public:
 	static TreeNode* buildHuffmanTree(std::map<char, double> const& stats);
 
 private:
-	static TreeNode* createNode(std::vector<std::pair<char, double>>::iterator it);
+	static TreeNode* createNode(std::vector<std::pair<char, double>>::iterator it, TreeNode* pParent);
 };
 
 #endif /* TREEBUILDER_H_ */

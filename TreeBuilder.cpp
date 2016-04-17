@@ -8,9 +8,17 @@
 #include "TreeBuilder.h"
 #include <algorithm>
 
-TreeNode* TreeBuilder::createNode(std::vector<std::pair<char, double>>::iterator it) {
-	TreeNode* pNode = new TreeNode('\0', true);
-	pNode->pLeft = new TreeNode(it->first, false);
+void TreeNode::getBitSequence(std::vector<bool> &out) {
+	if (pParent) {
+		pParent->getBitSequence(out);
+		out.push_back(bit);
+	} else
+		return;
+}
+
+TreeNode* TreeBuilder::createNode(std::vector<std::pair<char, double>>::iterator it, TreeNode* pParent) {
+	TreeNode* pNode = new TreeNode('\0', true, pParent);
+	pNode->pLeft = new TreeNode(it->first, false, pNode);
 	return pNode;
 }
 
@@ -25,10 +33,10 @@ TreeNode* TreeBuilder::buildHuffmanTree(std::map<char, double> const& stats) {
 	});
 
 	auto it = statList.begin();
-	TreeNode* root = createNode(it);
+	TreeNode* root = createNode(it, nullptr);
 	TreeNode* last = root;
 	while (++it != statList.end()) {
-		last->pRight = createNode(it);
+		last->pRight = createNode(it, last);
 		last = last->pRight;
 	}
 
