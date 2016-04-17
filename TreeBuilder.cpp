@@ -21,14 +21,14 @@ TreeNode* TreeBuilder::buildHuffmanTree(std::map<char, double> const& stats) {
 		statList.push_back(p);
 	// sortam lista dupa numarul de aparitii (cel mai mare la inceput)
 	std::sort(statList.begin(), statList.end(), [](std::pair<char, double> &l, std::pair<char, double> &r) {
-		return l.second >= r.second;
+		return l.second > r.second;
 	});
 
 	auto it = statList.begin();
 	TreeNode* root = createNode(it);
 	TreeNode* last = root;
-	while (it != statList.end()) {
-		last->pRight = createNode(it++);
+	while (++it != statList.end()) {
+		last->pRight = createNode(it);
 		last = last->pRight;
 	}
 

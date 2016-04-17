@@ -12,8 +12,8 @@
 
 class TextStatistics: public IStatisticsProvider {
 public:
-	TextStatistics();
-	virtual ~TextStatistics();
+	TextStatistics() = default;
+	virtual ~TextStatistics() = default;
 
 	std::map<char, double> getTextStatistics(std::string const& input) override;
 };

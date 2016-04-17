@@ -7,24 +7,15 @@
 
 #include "TextStatistics.h"
 
-TextStatistics::TextStatistics() {
-	// TODO Auto-generated constructor stub
-
-}
-
-TextStatistics::~TextStatistics() {
-	// TODO Auto-generated destructor stub
-}
-
 std::map<char, double>  TextStatistics::getTextStatistics(std::string const& input) {
 	std::map<char, double> LetterStatistic;
-	for(int i=0;input.length();i++){
+	for(int i=0; i<input.length(); i++){
 		LetterStatistic[input[i]]++;
-
 	}
-	for(auto j:LetterStatistic){
-		j.second=j.second/input.length();
-		}
+
+	for(auto &j:LetterStatistic) {
+		j.second /= input.length();
+	}
 
 	return LetterStatistic;
 }

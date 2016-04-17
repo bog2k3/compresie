@@ -21,6 +21,13 @@ struct TreeNode {
 	TreeNode(char ch, bool bit)
 		: ch(ch), bit(bit) {
 	}
+
+	~TreeNode() {
+		if (pLeft)
+			delete pLeft;
+		if (pRight)
+			delete pRight;
+	}
 };
 
 class TreeBuilder {

@@ -7,12 +7,13 @@
 
 #include "IStatisticsProvider.h"
 #include "TreeBuilder.h"
+#include "TextStatistics.h"
 #include <iostream>
 #include <fstream>
 
 
 IStatisticsProvider* createStatsProvider() {
-	return nullptr;
+	return new TextStatistics();
 }
 
 std::string getInputFromStream(std::istream &stream) {
@@ -39,5 +40,8 @@ int main(int argc, char* argv[]) {
 	TreeNode* pTree = TreeBuilder::buildHuffmanTree(stats);
 
 	// ...
+
+	delete pStatsProvider;
+	delete pTree;
 }
 
