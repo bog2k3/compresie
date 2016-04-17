@@ -8,14 +8,17 @@
 #include "IStatisticsProvider.h"
 #include "TreeBuilder.h"
 #include "TextStatistics.h"
+#include "Compressor.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 
 IStatisticsProvider* createStatsProvider() {
 	return new TextStatistics();
 }
 
+// citeste text dintr-un stream:
 std::string getInputFromStream(std::istream &stream) {
 	std::string buffer;
 	std::string line;
@@ -24,6 +27,7 @@ std::string getInputFromStream(std::istream &stream) {
 	return buffer;
 }
 
+// construieste secventa de biti pentru toate caracterele din arbore:
 void buildCharSeq(std::map<char, std::vector<bool>> &map, TreeNode* pNode) {
 	if (pNode->ch != '\0')
 		pNode->getBitSequence(map[pNode->ch]);
@@ -33,12 +37,32 @@ void buildCharSeq(std::map<char, std::vector<bool>> &map, TreeNode* pNode) {
 		buildCharSeq(map, pNode->pRight);
 }
 
+void prettyPrintCharSeq(std::map<char, std::vector<bool>> sq) {
+	using mapPair = std::pair<char, std::vector<bool>>;
+	std::vector<mapPair> lista;
+
+	for (auto x : sq)
+		lista.push_back(x);
+	std::sort(lista.begin(), lista.end(), [](mapPair &l, mapPair &r) {
+		return l.second.size() < r.second.size();
+	});
+	for (auto x : lista) {
+		std::cout << x.first << ": ";
+		for (bool b : x.second)
+			std::cout << (b?"1":"0");
+		std::cout << "\n";
+	}
+}
+
 int main(int argc, char* argv[]) {
 	std::string buffer;
 
-	if (argc < 2)
+	bool interactive = false;
+
+	if (argc < 2) {
 		buffer = getInputFromStream(std::cin);
-	else {
+		interactive = true;
+	} else {
 		std::ifstream fs(argv[1]);
 		buffer = getInputFromStream(fs);
 	}
@@ -50,6 +74,14 @@ int main(int argc, char* argv[]) {
 
 	std::map<char, std::vector<bool>> charSeq;
 	buildCharSeq(charSeq, pTree);
+
+	if (interactive)
+		prettyPrintCharSeq(charSeq);
+	else {
+		Compressor c;
+		c.compressToFile(buffer, charSeq, "out.huf");
+	}
+
 
 	delete pStatsProvider;
 	delete pTree;
