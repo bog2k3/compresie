@@ -7,6 +7,7 @@
 
 #include "Compressor.h"
 #include "BitWriter.h"
+#include "dictionaryMapElement.h"
 #include <fstream>
 #include <iostream>
 
@@ -26,12 +27,6 @@ std::vector<unsigned char> Compressor::assembleBits(std::vector<bool> seq) {
 	return vec;
 }
 
-struct mapElement {
-	char ch;
-	unsigned char size;
-	std::vector<unsigned char> bytes;
-};
-
 void Compressor::compressToFile(std::string const& input,
 			std::map<char, std::vector<bool>> seqMap,
 			std::string const& filename) {
@@ -40,16 +35,15 @@ void Compressor::compressToFile(std::string const& input,
 
 	// scriem dictionarul:
 	std::cout << "scriem dict...\n";
-	f << seqMap.size();
+	unsigned int mapSize = seqMap.size();
+	f.write((char*)&mapSize, sizeof(mapSize));
 	for (auto x : seqMap) {
 		mapElement e;
 		e.ch = x.first;
 		e.bytes = assembleBits(x.second);
-		e.size = x.second.size();
+		e.numBits = x.second.size();
 
-		f << e.ch << e.size;
-		for (auto b : e.bytes)
-			f << b;
+		e.writeTo(f);
 	}
 	std::cout << "scriem text...\n";
 	BitWriter bw(f);
@@ -57,6 +51,7 @@ void Compressor::compressToFile(std::string const& input,
 		bw.addBits(seqMap[c]);
 	}
 	bw.finish();
+	std::cout << "terminat!\n";
 }
 
 void Compressor::compressToScreen(std::string const& input,

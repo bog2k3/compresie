@@ -9,6 +9,7 @@
 #include "TreeBuilder.h"
 #include "TextStatistics.h"
 #include "Compressor.h"
+#include "Decompressor.h"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -65,52 +66,64 @@ double avgEntropy(std::map<char, double> &seq, int length) {
 
 int main(int argc, char* argv[]) {
 	std::string buffer;
+	std::string outFileName;
 
 	bool interactive = false;
+	bool decompress = false;
 
 	if (argc < 2) {
 		buffer = getInputFromStream(std::cin);
 		interactive = true;
 	} else {
-		std::ifstream fs(argv[1]);
-		buffer = getInputFromStream(fs);
+		decompress = std::string("-d") == argv[1];
+		if (!decompress) {
+			std::ifstream fs(argv[2]);
+			buffer = getInputFromStream(fs);
+		}
+		outFileName = argv[3];
 	}
 
-	IStatisticsProvider* pStatsProvider = createStatsProvider();
+	if (!decompress) {
+		IStatisticsProvider* pStatsProvider = createStatsProvider();
 
-	std::map<char, double> stats = pStatsProvider->getTextStatistics(buffer);
-	TreeNode* pTree = TreeBuilder::buildHuffmanTree(stats);
+		std::map<char, double> stats = pStatsProvider->getTextStatistics(buffer);
+		TreeNode* pTree = TreeBuilder::buildHuffmanTree(stats);
 
-	std::map<char, std::vector<bool>> charSeq;
-	buildCharSeq(charSeq, pTree);
+		std::map<char, std::vector<bool>> charSeq;
+		buildCharSeq(charSeq, pTree);
 
-	if (interactive)
-	{
-		std::cout << "-----------------------------------------------------------------------\n";
-		int inputBits = buffer.size() * 8;
-		std::cout << "Numar biti intrare: " << inputBits << "\n";
-		double avgEntropInput = avgEntropy(stats, buffer.size());
-		std::cout << "Entropia medie pe caracter in text: " << avgEntropInput << " bit/caracter\n";
-		double redundanta = buffer.size() * (8 -  avgEntropInput);
-		std::cout << "Redundanta in text: " << redundanta << " biti\n";
-		std::cout << "Informatia din text: " << inputBits - redundanta << " biti\n";
-		std::cout << "-----------------------------------------------------------------------\n";
-		std::cout << "[DICTIONAR:]\n";
-		std::cout << "-----------------------------------------------------------------------\n";
-		prettyPrintCharSeq(charSeq, stats);
-		std::cout << "-----------------------------------------------------------------------\n";
-		std::cout << "[TEXTUL CODIFICAT:]\n";
-		std::cout << "-----------------------------------------------------------------------\n";
-		Compressor c;
-		c.compressToScreen(buffer, charSeq);
+		if (interactive)
+		{
+			std::cout << "-----------------------------------------------------------------------\n";
+			int inputBits = buffer.size() * 8;
+			std::cout << "Numar biti intrare: " << inputBits << "\n";
+			double avgEntropInput = avgEntropy(stats, buffer.size());
+			std::cout << "Entropia medie pe caracter in text: " << avgEntropInput << " bit/caracter\n";
+			double redundanta = buffer.size() * (8 -  avgEntropInput);
+			std::cout << "Redundanta in text: " << redundanta << " biti\n";
+			std::cout << "Informatia din text: " << inputBits - redundanta << " biti\n";
+			std::cout << "-----------------------------------------------------------------------\n";
+			std::cout << "[DICTIONAR:]\n";
+			std::cout << "-----------------------------------------------------------------------\n";
+			prettyPrintCharSeq(charSeq, stats);
+			std::cout << "-----------------------------------------------------------------------\n";
+			std::cout << "[TEXTUL CODIFICAT:]\n";
+			std::cout << "-----------------------------------------------------------------------\n";
+			Compressor c;
+			c.compressToScreen(buffer, charSeq);
+		}
+		else {	// neinteractiv
+			Compressor c;
+			c.compressToFile(buffer, charSeq, outFileName);
+		}
+
+		delete pStatsProvider;
+		delete pTree;
+
+	} else { // decompresie
+		Decompressor d;
+		std::ifstream input(argv[2], std::ios::binary);
+		d.decompressToFile(input, outFileName);
 	}
-	else {
-		Compressor c;
-		c.compressToFile(buffer, charSeq, "out.huf");
-	}
-
-
-	delete pStatsProvider;
-	delete pTree;
 }
 

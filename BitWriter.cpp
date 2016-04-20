@@ -10,7 +10,6 @@
 BitWriter::BitWriter(std::ostream &str)
 	: str(str)
 {
-	// TODO Auto-generated constructor stub
 }
 
 void BitWriter::addBits(std::vector<bool> const& bits) {
@@ -18,7 +17,7 @@ void BitWriter::addBits(std::vector<bool> const& bits) {
 		c = (c << 1) | (b ? 1 : 0);
 		count++;
 		if (count == 8) {
-			str << c;
+			str.write((char*)&c, sizeof(c));
 			count = 0;
 			c = 0;
 		}
@@ -30,6 +29,6 @@ void BitWriter::finish() {
 	while (count++ < 8) {
 		c = (c << 1) | 1;
 	}
-	str << c;
+	str.write((char*)&c, sizeof(c));
 }
 
