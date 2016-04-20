@@ -58,3 +58,15 @@ void Compressor::compressToFile(std::string const& input,
 	}
 	bw.finish();
 }
+
+void Compressor::compressToScreen(std::string const& input,
+			std::map<char, std::vector<bool>> seqMap) {
+	int bitCount = 0;
+	for (char c : input) {
+		for (bool b : seqMap[c]) {
+			std::cout << (b?"1":"0");
+			bitCount++;
+		}
+	}
+	std::cout << "\n\nCompressed bit count: " << bitCount << "\n";
+}

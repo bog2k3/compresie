@@ -21,6 +21,9 @@ public:
 			std::map<char, std::vector<bool>> seqMap,
 			std::string const& filename);
 
+	void compressToScreen(std::string const& input,
+			std::map<char, std::vector<bool>> seqMap);
+
 private:
 	std::vector<unsigned char> assembleBits(std::vector<bool> seq);
 };

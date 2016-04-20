@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <iomanip>
 
 
 IStatisticsProvider* createStatsProvider() {
@@ -37,7 +38,7 @@ void buildCharSeq(std::map<char, std::vector<bool>> &map, TreeNode* pNode) {
 		buildCharSeq(map, pNode->pRight);
 }
 
-void prettyPrintCharSeq(std::map<char, std::vector<bool>> sq) {
+void prettyPrintCharSeq(std::map<char, std::vector<bool>> sq, std::map<char, double> stats) {
 	using mapPair = std::pair<char, std::vector<bool>>;
 	std::vector<mapPair> lista;
 
@@ -47,7 +48,7 @@ void prettyPrintCharSeq(std::map<char, std::vector<bool>> sq) {
 		return l.second.size() < r.second.size();
 	});
 	for (auto x : lista) {
-		std::cout << x.first << ": ";
+		std::cout << x.first << "(" << std::fixed << std::setprecision(3) << stats[x.first] << "): ";
 		for (bool b : x.second)
 			std::cout << (b?"1":"0");
 		std::cout << "\n";
@@ -76,7 +77,19 @@ int main(int argc, char* argv[]) {
 	buildCharSeq(charSeq, pTree);
 
 	if (interactive)
-		prettyPrintCharSeq(charSeq);
+	{
+		std::cout << "-----------------------------------------------------------------------\n";
+		std::cout << "Input bit count: " << buffer.size() * 8 << "\n";
+		std::cout << "-----------------------------------------------------------------------\n";
+		std::cout << "[DICTIONARY:]\n";
+		std::cout << "-----------------------------------------------------------------------\n";
+		prettyPrintCharSeq(charSeq, stats);
+		std::cout << "-----------------------------------------------------------------------\n";
+		std::cout << "[COMPRESSED DATA:]\n";
+		std::cout << "-----------------------------------------------------------------------\n";
+		Compressor c;
+		c.compressToScreen(buffer, charSeq);
+	}
 	else {
 		Compressor c;
 		c.compressToFile(buffer, charSeq, "out.huf");
