@@ -48,11 +48,19 @@ void prettyPrintCharSeq(std::map<char, std::vector<bool>> sq, std::map<char, dou
 		return l.second.size() < r.second.size();
 	});
 	for (auto x : lista) {
-		std::cout << x.first << "(" << std::fixed << std::setprecision(3) << stats[x.first] << "): ";
+		std::cout << x.first << "(" << std::fixed << std::setprecision(4) << stats[x.first] << "): ";
 		for (bool b : x.second)
 			std::cout << (b?"1":"0");
 		std::cout << "\n";
 	}
+}
+
+double avgEntropy(std::map<char, double> &seq, int length) {
+	double ent = 0;
+	for (auto p : seq) {
+		ent += log2(1.0 / p.second) * p.second;
+	}
+	return ent;
 }
 
 int main(int argc, char* argv[]) {
@@ -79,13 +87,21 @@ int main(int argc, char* argv[]) {
 	if (interactive)
 	{
 		std::cout << "-----------------------------------------------------------------------\n";
-		std::cout << "Input bit count: " << buffer.size() * 8 << "\n";
+		int inputBits = buffer.size() * 8;
+		std::cout << "Numar biti intrare: " << inputBits << "\n";
+		double avgEntropInput = avgEntropy(stats, buffer.size());
+		std::cout << "Entropia medie pe caracter in text: " << avgEntropInput << " bit/caracter\n";
+		double redundanta = buffer.size() * (8 -  avgEntropInput);
+		std::cout << "Redundanta in text: " << redundanta << " biti\n";
+		std::cout << "Informatia din text: " << inputBits - redundanta << " biti\n";
 		std::cout << "-----------------------------------------------------------------------\n";
-		std::cout << "[DICTIONARY:]\n";
+		std::cout << "[DICTIONAR:]\n";
 		std::cout << "-----------------------------------------------------------------------\n";
 		prettyPrintCharSeq(charSeq, stats);
 		std::cout << "-----------------------------------------------------------------------\n";
-		std::cout << "[COMPRESSED DATA:]\n";
+		//std::cout << "Entropia medie pe cuvant de cod: " << avgEntropy(stats, charSeq)
+		std::cout << "-----------------------------------------------------------------------\n";
+		std::cout << "[TEXTUL CODIFICAT:]\n";
 		std::cout << "-----------------------------------------------------------------------\n";
 		Compressor c;
 		c.compressToScreen(buffer, charSeq);
