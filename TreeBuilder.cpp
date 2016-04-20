@@ -16,10 +16,27 @@ void TreeNode::getBitSequence(std::vector<bool> &out) {
 		return;
 }
 
-TreeNode* TreeBuilder::createNode(std::vector<std::pair<char, double>>::iterator it, TreeNode* pParent) {
-	TreeNode* pNode = new TreeNode('\0', true, pParent);
-	pNode->pLeft = new TreeNode(it->first, false, pNode);
-	return pNode;
+void TreeNode::split() {
+	if (ch.size() < 2)
+		return;
+	double totalWeight = 0;
+	for (auto p : ch)
+		totalWeight += p.second;
+	double halfWeight = totalWeight / 2;
+
+	// impartim nodul astfel incat in stanga ponderile insumate ale caracterelor
+	// sa fie cat mai apropiate (dar mai mici) de jumatate din total (halfWeight)
+	double summedWeight = ch[0].second;
+	for (unsigned i=1; i<ch.size()-1; i++) {
+		if (summedWeight + ch[i].second >= halfWeight) {
+			pLeft = new TreeNode(decltype(ch)(ch.begin(), ch.begin()+i), false, this);
+			pLeft->split();
+			pRight = new TreeNode(decltype(ch)(ch.begin()+i, ch.end()), true, this);
+			pRight->split();
+			break;
+		}
+		summedWeight += ch[i].second;
+	}
 }
 
 TreeNode* TreeBuilder::buildHuffmanTree(std::map<char, double> const& stats) {
@@ -32,13 +49,8 @@ TreeNode* TreeBuilder::buildHuffmanTree(std::map<char, double> const& stats) {
 		return l.second > r.second;
 	});
 
-	auto it = statList.begin();
-	TreeNode* root = createNode(it, nullptr);
-	TreeNode* last = root;
-	while (++it != statList.end()) {
-		last->pRight = createNode(it, last);
-		last = last->pRight;
-	}
+	TreeNode* root = new TreeNode(std::move(statList), false, nullptr);
+	root->split();
 
 	return root;
 }

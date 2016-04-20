@@ -30,8 +30,8 @@ std::string getInputFromStream(std::istream &stream) {
 
 // construieste secventa de biti pentru toate caracterele din arbore:
 void buildCharSeq(std::map<char, std::vector<bool>> &map, TreeNode* pNode) {
-	if (pNode->ch != '\0')
-		pNode->getBitSequence(map[pNode->ch]);
+	if (pNode->isLeaf())
+		pNode->getBitSequence(map[pNode->ch[0].first]);
 	if (pNode->pLeft)
 		buildCharSeq(map, pNode->pLeft);
 	if (pNode->pRight)
@@ -98,8 +98,6 @@ int main(int argc, char* argv[]) {
 		std::cout << "[DICTIONAR:]\n";
 		std::cout << "-----------------------------------------------------------------------\n";
 		prettyPrintCharSeq(charSeq, stats);
-		std::cout << "-----------------------------------------------------------------------\n";
-		//std::cout << "Entropia medie pe cuvant de cod: " << avgEntropy(stats, charSeq)
 		std::cout << "-----------------------------------------------------------------------\n";
 		std::cout << "[TEXTUL CODIFICAT:]\n";
 		std::cout << "-----------------------------------------------------------------------\n";

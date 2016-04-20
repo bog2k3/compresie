@@ -12,15 +12,15 @@
 #include <map>
 
 struct TreeNode {
-	char ch;
-	bool bit;
+	std::vector<std::pair<char, double>> ch;	// caracterele de sub nodul curent
+	bool bit;									// bitul asociat nodului curent (0/1)
 
 	TreeNode* pLeft = nullptr;
 	TreeNode* pRight = nullptr;
 	TreeNode* pParent = nullptr;
 
-	TreeNode(char ch, bool bit, TreeNode* pParent)
-		: ch(ch), bit(bit), pParent(pParent) {
+	TreeNode(std::vector<std::pair<char, double>> &&ch, bool bit, TreeNode* pParent)
+		: ch(std::move(ch)), bit(bit), pParent(pParent) {
 	}
 
 	~TreeNode() {
@@ -29,15 +29,15 @@ struct TreeNode {
 		if (pRight)
 			delete pRight;
 	}
+
+	bool isLeaf() { return pLeft == nullptr && pRight == nullptr; }
 	void getBitSequence(std::vector<bool> &out);
+	void split();
 };
 
 class TreeBuilder {
 public:
 	static TreeNode* buildHuffmanTree(std::map<char, double> const& stats);
-
-private:
-	static TreeNode* createNode(std::vector<std::pair<char, double>>::iterator it, TreeNode* pParent);
 };
 
 #endif /* TREEBUILDER_H_ */
