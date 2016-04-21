@@ -27,7 +27,7 @@ void TreeNode::split() {
 	// impartim nodul astfel incat in stanga ponderile insumate ale caracterelor
 	// sa fie cat mai apropiate (dar mai mici) de jumatate din total (halfWeight)
 	double summedWeight = ch[0].second;
-	for (unsigned i=1; i<ch.size()-1; i++) {
+	for (unsigned i=1; i<ch.size(); i++) {
 		if (summedWeight + ch[i].second >= halfWeight) {
 			pLeft = new TreeNode(decltype(ch)(ch.begin(), ch.begin()+i), false, this);
 			pLeft->split();

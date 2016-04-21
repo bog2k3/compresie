@@ -20,7 +20,7 @@ public:
 	void decompressToFile(std::istream &input, std::string const& outFileName);
 
 private:
-	std::vector<bool> makeBitSequence(std::vector<unsigned char> const& bytes, int numBits);
+	std::string makeBitSequence(std::vector<unsigned char> const& bytes, int numBits);
 };
 
 #endif /* DECOMPRESSOR_H_ */
