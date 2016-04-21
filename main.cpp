@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 			std::cout << "Entropia medie pe caracter in text: " << avgEntropInput << " bit/caracter\n";
 			double redundanta = buffer.size() * (8 -  avgEntropInput);
 			std::cout << "Redundanta in text: " << redundanta << " biti\n";
-			std::cout << "Informatia din text: " << inputBits - redundanta << " biti\n";
+			std::cout << "Informatia din text: " << avgEntropInput * buffer.size() << " biti\n";
 			std::cout << "-----------------------------------------------------------------------\n";
 			std::cout << "[DICTIONAR:]\n";
 			std::cout << "-----------------------------------------------------------------------\n";

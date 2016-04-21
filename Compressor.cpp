@@ -11,24 +11,25 @@
 #include <fstream>
 #include <iostream>
 
-std::vector<unsigned char> Compressor::assembleBits(std::vector<bool> seq) {
+std::vector<unsigned char> Compressor::assembleBits(std::vector<bool> const& seq) {
 	std::vector<unsigned char> vec;
 	vec.push_back(0);
-	unsigned char &c = vec.back();
-	unsigned char count = 0;
+	unsigned char *c = &vec.back();
+	int bit = 7;
 	for (unsigned i=0; i<seq.size(); i++) {
-		c = (c << 1) | (seq[i] ? 1 : 0);
-		count++;
-		if (count == 8) {
+		if (bit < 0) {
 			vec.push_back(0);
-			c = vec.back();
+			c = &vec.back();
+			bit = 7;
 		}
+		*c = *c | ((seq[i] ? 1 : 0) << bit);
+		bit--;
 	}
 	return vec;
 }
 
 void Compressor::compressToFile(std::string const& input,
-			std::map<char, std::vector<bool>> seqMap,
+			std::map<char, std::vector<bool>> & seqMap,
 			std::string const& filename) {
 
 	std::ofstream f(filename, std::ios::binary);
@@ -55,7 +56,7 @@ void Compressor::compressToFile(std::string const& input,
 }
 
 void Compressor::compressToScreen(std::string const& input,
-			std::map<char, std::vector<bool>> seqMap) {
+			std::map<char, std::vector<bool>> & seqMap) {
 	int bitCount = 0;
 	for (char c : input) {
 		for (bool b : seqMap[c]) {

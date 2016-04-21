@@ -25,16 +25,16 @@ void Decompressor::decompressToFile(std::istream &input, std::string const& outF
 	// 2. citim continutul
 }
 
-std::vector<bool> Decompressor::makeBitSequence(std::vector<unsigned char> bytes, int numBits) {
+std::vector<bool> Decompressor::makeBitSequence(std::vector<unsigned char> const& bytes, int numBits) {
 	std::vector<bool> bits;
-	int crtByte = 0, crtBit = 0;
+	int crtByte = 0, crtBit = 7;
 	for (int i=0; i<numBits; i++) {
-		bits.push_back((bytes[crtByte] & (1 << (7-crtBit)) >> (7-crtBit)) != 0);
-		crtBit += 1;
-		if (crtBit == 8) {
+		if (crtBit < 0) {
 			crtByte++;
-			crtBit = 0;
+			crtBit = 7;
 		}
+		bits.push_back((bytes[crtByte] & (1 << crtBit)) != 0);
+		crtBit--;
 	}
 	return bits;
 }
